@@ -69,12 +69,15 @@ gnl	insert_stack(gnl stash, char *buf)
 	element = malloc(sizeof(*element));
 	if (element == NULL)
 		return (NULL);
-	if (/*stash == NULL ||*/ buf == NULL)
+	if (buf == NULL)
 	{
 		free(element);
 		return (NULL);
 	}
-	element->buffer = buf;
+	element->buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	if (element->buffer == NULL)
+		return (NULL);
+	ft_strcpy(element->buffer, buf);
 	element->next = stash;
 	return (element);
 }
@@ -106,7 +109,6 @@ char	*ft_putline(gnl stash, int len/*, char *buf*/)
 	line = malloc(sizeof(char) * len + 1);
 	if (line == NULL)
 		return (NULL);
-//	tmp = new_stack();
 	while (i >= 0)
 	{
 		j = 0;
@@ -126,16 +128,14 @@ char	*ft_putline(gnl stash, int len/*, char *buf*/)
 		tmp = stash->next;
 		clear_element(stash);
 		stash = tmp;
-		printf("Valeur de i dans ft_putline : %d\n", i);
-//		buf = stash->buffer;
 	}
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	char	*buf;
-	char	*line;
+	char		*buf;
+	char		*line;
 	int	len;
 	int	ret;
 	gnl	stash = new_stack();
@@ -151,36 +151,13 @@ char	*get_next_line(int fd)
 		if (ret == -1)
 			return (NULL);
 		stash = insert_stack(stash, buf);
-		stash->buffer = buf;
-//		printf("Valeur de buf dans get_next_line : %s\n", buf); 
+		ft_strcpy(stash->buffer, buf);
 		len += BUFFER_SIZE;
 	}
-//	printf("\nValeur de len dans get_next_line : %d\n", len);
 	line = malloc(sizeof(char) * len + 1);
 	if (line == NULL)
 		return (NULL);
-	line = ft_putline(stash, len/*, buf*/);
+	line = ft_putline(stash, len);
 	print_line(line);
 	return (line);
-
-
-/*	gnl	*tmp;
-
-	if (is_empty(stash) || fd < 0)
-		return (NULL);
-	if (!is_empty(stash->next))
-		tmp = stash->next;
-	stash->buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	if (stash->buffer == NULL)
-		return (NULL);
-	if (!ft_strchr(stash->buffer, '\n'))
-	{
-		stash->ret = read(fd, stash->buffer, BUFFER_SIZE);
-		if (stash->ret == -1)
-		{
-			free(stash->buffer);
-			return (NULL);
-		}
-	}	
-*/
 }

@@ -72,6 +72,20 @@ char	*ft_strchr(char *s, char c)
 	return (NULL);
 }
 
+char	*ft_strcpy(char *dest, char *src)
+{
+	int	i;
+
+	i = 0;
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
 void	*ft_calloc(size_t nmemb, size_t size)
 {
 	unsigned int		n;
