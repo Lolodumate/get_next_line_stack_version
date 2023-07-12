@@ -23,7 +23,7 @@ size_t	ft_strlen(char *str)
 		size++;
 	return (size);
 }
-
+/*
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char		*str;
@@ -53,7 +53,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (str);
 }
-
+*/
 char	*ft_strchr(char *s, char c)
 {
 	int	i;
@@ -85,6 +85,16 @@ char	*ft_strcpy(char *dest, char *src)
 	dest[i] = '\0';
 	return (dest);
 }
+
+t_post_n	*ft_post_n(t_post_n *post_n)
+{
+	post_n->str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+//	post_n->str = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	if (post_n->str == NULL)
+		return (NULL);
+	return (post_n);
+}
+
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {

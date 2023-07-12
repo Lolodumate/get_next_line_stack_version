@@ -23,29 +23,26 @@
 #  define BUFFER_SIZE 5
 # endif
 
-typedef enum
+typedef struct s_post_n
 {
-	false,
-	true
-} Bool;
+	char	*str;
+} t_post_n;
 
-typedef struct gnl
+typedef struct s_gnl
 {
-	int			ret;
 	char		*buffer;
-	struct	gnl	*next;
-} s_gnl, *gnl;
+	struct	s_gnl	*next;
+} t_gnl, *p_gnl;
 
-Bool					is_empty(gnl element);
 char				*get_next_line(int fd);
-char				*ft_putline(gnl stash, int len);
+char				*ft_putline(p_gnl stash, int len, t_post_n *post_n);
+char				*ft_read_line(int fd, p_gnl stash, t_post_n *post_n);
 char				*ft_strchr(char *s, char c);
 char				*ft_strcpy(char *dest, char *src);
-gnl			next_stack(void);;
-gnl			insert_stack(gnl element, char *buffer);
+p_gnl			insert_stack(p_gnl element, char *buffer);
 int		ft_line_lenght(int fd);
-void	clear_element(gnl element);
+t_post_n        *ft_post_n(t_post_n *post_n);
 void	*ft_calloc(size_t nmemb, size_t size);
-void	clear_stack(gnl element);
+p_gnl	clear_stack(p_gnl element);
 
 # endif

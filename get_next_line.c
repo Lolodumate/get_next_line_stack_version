@@ -42,30 +42,17 @@
  *      read : lit sur le "descripteur de fichier" 0 (c'est à dire l'entrée standard),et  place ce qui a été lu en mémoire à partir de l'adresse de buf, en se limitant à au plus 1 caractère. Ca tombe bien puisque buf, c'est une variable qui peut contenir qu'au plus 1 caractère.
 
 si la lecture a réussi, écrit (write) ce caractère converti sur la sortie standard (1).
-
-A part ça c'est programmé avec les pieds, la variable c n'est pas utilisée, et read peut aussi retourner -1 en cas d'erreur, ce qui provoquera une boucle.
  *
  *
  */
 
 #include "get_next_line.h"
 
-gnl	new_stack(void)
+p_gnl	insert_stack(p_gnl stash, char *buf)
 {
-	return (NULL);
-}
+	t_gnl	*element;
 
-Bool	is_empty(gnl stash)
-{
-	if (stash == NULL)
-		return (true);
-	return (false);
-}
-
-gnl	insert_stack(gnl stash, char *buf)
-{
-	gnl	element;
-
+//	element = ft_calloc(1, sizeof(*element));
 	element = malloc(sizeof(*element));
 	if (element == NULL)
 		return (NULL);
@@ -74,7 +61,7 @@ gnl	insert_stack(gnl stash, char *buf)
 		free(element);
 		return (NULL);
 	}
-	element->buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	element->buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (element->buffer == NULL)
 		return (NULL);
 	ft_strcpy(element->buffer, buf);
@@ -82,13 +69,18 @@ gnl	insert_stack(gnl stash, char *buf)
 	return (element);
 }
 
-void	clear_element(gnl element)
+p_gnl	clear_stack(p_gnl stash)
 {
-	if (is_empty(element))
-		return;
-	free(element);
-}
+	t_gnl	*element;
 
+	if (stash == NULL)
+		return (NULL);
+	element = stash->next;
+	free(stash->buffer);
+	free(stash);
+	return (element);
+}
+/*
 void	print_line(char *line)
 {
 	if (line == NULL)
@@ -96,17 +88,21 @@ void	print_line(char *line)
 	printf("%s", line);
 	
 }
-
-char	*ft_putline(gnl stash, int len/*, char *buf*/)
+*/
+char	*ft_putline(p_gnl stash, int len, t_post_n *post_n)
 {
 	int		i;
 	int		j;
+	int		k;
 	char	*line;
-	gnl	tmp;
 
 	i = len - BUFFER_SIZE;
 	j = 0;
-	line = malloc(sizeof(char) * len + 1);
+	k = 0;
+	if (stash->buffer == NULL || len == 0/*stash->buffer[0] == '\0' || !stash->buffer[0]*/)
+		return (NULL);
+	line = ft_calloc(len + 1, sizeof(char));
+//	line = malloc(sizeof(char) * len + 1);
 	if (line == NULL)
 		return (NULL);
 	while (i >= 0)
@@ -116,7 +112,16 @@ char	*ft_putline(gnl stash, int len/*, char *buf*/)
 		{
 			line[i + j] = stash->buffer[j];
 			if (stash->buffer[j] == '\n')
+			{
+				while (j < BUFFER_SIZE && stash->buffer[j])
+				{
+					post_n->str[k] = stash->buffer[j];
+					j++;
+					k++;
+				}
+				post_n->str[k] = '\0';
 				break ;
+			}
 			j++;
 		}
 		if (i == 0)
@@ -125,39 +130,62 @@ char	*ft_putline(gnl stash, int len/*, char *buf*/)
 			i -= BUFFER_SIZE;
 		else if (i < BUFFER_SIZE)
 			i = 0;
-		tmp = stash->next;
-		clear_element(stash);
-		stash = tmp;
+		stash = clear_stack(stash);
 	}
+	return (line);
+}
+
+char	*ft_read_line(int fd, p_gnl stash, t_post_n *post_n)
+{
+	char		*buf;
+	static char		*line;
+	unsigned int	len;
+	int	ret;
+
+	len = 0;
+	ret = 1;
+	buf = ft_calloc(BUFFER_SIZE + 1,  sizeof(char));
+	if (buf == NULL)
+		return (NULL);
+	if (post_n->str != NULL && post_n->str[0] != '\0')
+	{
+		stash = insert_stack(stash, post_n->str);
+		ft_strcpy(stash->buffer, post_n->str);
+		free(post_n->str);
+		free(post_n);
+		len += BUFFER_SIZE;
+	}
+	while (!ft_strchr(buf, '\n') && ret != 0)
+	{
+		ret = read(fd, buf, BUFFER_SIZE);
+		if (ret == -1)
+		{
+			free(buf);
+			return (NULL);
+		}
+		buf[ret] = '\0';
+		stash = insert_stack(stash, buf);
+		len += ret;
+	}
+	free(buf);
+	line = ft_putline(stash, len, post_n);
+//	print_line(line);
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*buf;
-	char		*line;
-	int	len;
-	int	ret;
-	gnl	stash = new_stack();
+	p_gnl	stash;
+	t_post_n	*post_n;
+	static char	*line;
 
-	len = 0;
-	ret = 1;
-	buf = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	if (buf == NULL)
+	stash = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (!ft_strchr(buf, '\n') && ret > 0)
-	{
-		ret = read(fd, buf, BUFFER_SIZE);
-		if (ret == -1)
-			return (NULL);
-		stash = insert_stack(stash, buf);
-		ft_strcpy(stash->buffer, buf);
-		len += BUFFER_SIZE;
-	}
-	line = malloc(sizeof(char) * len + 1);
-	if (line == NULL)
+	post_n = malloc(sizeof(*post_n));
+	if (post_n == NULL)
 		return (NULL);
-	line = ft_putline(stash, len);
-	print_line(line);
+	ft_post_n(post_n);
+	line = ft_read_line(fd, stash, post_n);
 	return (line);
 }
