@@ -23,37 +23,7 @@ size_t	ft_strlen(char *str)
 		size++;
 	return (size);
 }
-/*
-char	*ft_strjoin(char *s1, char *s2)
-{
-	char		*str;
-	size_t	size_str;
-	size_t	i;
-	size_t	j;
 
-	i = 0;
-	j = 0;
-	if (s1 == NULL)
-	{
-		s1 = ft_calloc(sizeof(char), 1);
-		s1[0] = '\0';
-	}
-	size_str = ft_strlen(s1) + ft_strlen(s2);
-	str = ft_calloc(sizeof(char), size_str + 1);
-	if (str == NULL)
-		return (NULL);
-	while (s1[i])
-	{
-		str[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-		str[i++] = s2[j++];
-	str[i] = '\0';
-	free(s1);
-	return (str);
-}
-*/
 char	*ft_strchr(char *s, char c)
 {
 	int	i;
@@ -85,16 +55,40 @@ char	*ft_strcpy(char *dest, char *src)
 	dest[i] = '\0';
 	return (dest);
 }
-
-t_post_n	*ft_post_n(t_post_n *post_n)
+/*
+t_gnl	*ft_gnl(t_gnl *stash)
 {
-	post_n->str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-//	post_n->str = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	if (post_n->str == NULL)
-		return (NULL);
-	return (post_n);
+	stash->len = 0;
+	stash->buffer = NULL;
+	stash->next = NULL;
+	return (stash);
 }
+*/
 
+char	*ft_put_line(char *str_stash)
+{
+	int		i;
+	char	*line;
+
+	i = 0;
+	if (str_stash == NULL)
+		return (NULL);
+	while (str_stash[i] && str_stash[i] != '\n')
+		i++;
+	if (!str_stash[i])
+		return (NULL);
+	i++;
+	line = malloc(sizeof(char) * i + 1);
+	if (line == NULL)
+	{
+		free(str_stash);
+		return (NULL);
+	}
+	line[i + 1] = '\0';
+	while (i-- >= 0)
+		line[i] = str_stash[i];
+	return (line);
+}
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
