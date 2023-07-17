@@ -84,8 +84,8 @@ char	*ft_put_line(char *str_stash)
 		free(str_stash);
 		return (NULL);
 	}
-	line[i + 1] = '\0';
-	while (i-- >= 0)
+	line[i] = '\0';
+	while (--i >= 0)
 		line[i] = str_stash[i];
 	return (line);
 }

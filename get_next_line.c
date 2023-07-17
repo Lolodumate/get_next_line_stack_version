@@ -101,17 +101,22 @@ char	*ft_put_stash(char *str_stash, p_gnl stash)
 	i = 0;
 	j = 0;
 	i = stash->len - stash->ret;
-/*	printf("\nft_pust_stash - Valeur de stash->len : %d\n", stash->len);
-	printf("ft_pust_stash - Valeur de stash->ret : %d\n", stash->ret);
-	printf("ft_pust_stash - Valeur de i : %d\n", i);
-*/	while (stash != NULL)
+	str_stash[stash->len] = '\0';
+	while (stash != NULL)
 	{
-		while (stash->buffer[j++])
+		
+/*         printf("\nft_put_stash - Valeur de stash->buffer : %s\n", stash->buffer);
+         printf("ft_pust_stash - Valeur de stash->len : %d\n", stash->len);
+         printf("ft_pust_stash - Valeur de stash->ret : %d\n", stash->ret);
+         printf("ft_pust_stash - Valeur de i : %d\n", i);
+*/		while (j < stash->ret)
+		{
 			str_stash[i + j] = stash->buffer[j];
+			j++;
+		}
 		stash = stash->next;
-		if (stash == NULL)
-			break ;
-		i -= stash->ret;
+		if (stash != NULL)
+			i -= stash->ret;
 		j = 0;
 	}
 	stash = clear_stack(stash);
@@ -194,10 +199,11 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	printf("str_stash dans get_next_line : %s\n", str_stash);
-
+	printf("\nValeur de str_stash dans get_next_line : %s\n", str_stash);
 	line = ft_put_line(str_stash); 
 	str_stash = ft_cut_stash(str_stash);
-	printf("%s", line);
+	printf("line : %s\n", line);
+	printf("str_stash : %s\n", str_stash);
 	printf("ft_read_line - Valeur de ft_strlen(str_stash) : %ld\n", ft_strlen(str_stash));
 	return (line);
 }
