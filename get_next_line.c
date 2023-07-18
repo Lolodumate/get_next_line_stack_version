@@ -48,20 +48,22 @@ si la lecture a réussi, écrit (write) ce caractère converti sur la sortie sta
 
 #include "get_next_line.h"
 
-p_gnl	insert_stack(p_gnl stash, char *buf, int ret)
+t_gnl	*insert_stack(t_gnl *stash, char *buf, size_t ret)
 {
 	t_gnl	*element;
-	int	tmp;
+	size_t	tmp;
 
 	tmp = 0;
 	element = malloc(sizeof(*element));
 	if (element == NULL)
 		return (NULL);
-	element->buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	element->buffer = ft_calloc(ret + 1, sizeof(char));
 	if (element->buffer == NULL)
+	{
+		free(element);
 		return (NULL);
+	}
 	ft_strcpy(element->buffer, buf);
-	element->len = 0;
 	if (stash == NULL)
 		tmp = 0;
 	else
@@ -72,7 +74,7 @@ p_gnl	insert_stack(p_gnl stash, char *buf, int ret)
 	return (element);
 }
 
-p_gnl	clear_stack(p_gnl stash)
+t_gnl	*clear_stack(t_gnl *stash)
 {
 	t_gnl	*element;
 
@@ -80,17 +82,10 @@ p_gnl	clear_stack(p_gnl stash)
 		return (NULL);
 	element = stash->next;
 	stash->len = 0;
+	stash->ret = 0;
 	free(stash->buffer);
 	free(stash);
-	return (clear_stack(element));
-}
-
-void	print_line(char *line)
-{
-	if (line == NULL)
-		return ;
-	printf("%s", line);
-	
+	return (element);
 }
 
 char	*ft_put_stash(char *str_stash, p_gnl stash)
@@ -102,33 +97,33 @@ char	*ft_put_stash(char *str_stash, p_gnl stash)
 	j = 0;
 	i = stash->len - stash->ret;
 	str_stash[stash->len] = '\0';
+	if (stash == NULL)
+		return (NULL);
 	while (stash != NULL)
 	{
-		
-/*         printf("\nft_put_stash - Valeur de stash->buffer : %s\n", stash->buffer);
-         printf("ft_pust_stash - Valeur de stash->len : %d\n", stash->len);
-         printf("ft_pust_stash - Valeur de stash->ret : %d\n", stash->ret);
-         printf("ft_pust_stash - Valeur de i : %d\n", i);
-*/		while (j < stash->ret)
+		while (j < stash->ret)
 		{
 			str_stash[i + j] = stash->buffer[j];
 			j++;
 		}
-		stash = stash->next;
+		stash = clear_stack(stash);
 		if (stash != NULL)
 			i -= stash->ret;
 		j = 0;
 	}
-	stash = clear_stack(stash);
 	return (str_stash);
 }
 
-p_gnl	ft_read_line(int fd, p_gnl stash)
+p_gnl	ft_read_line(int fd, t_gnl *stash, char *str_stash)
 {
 	int		ret;
 	char	*buf;
 
 	ret = 1;
+	if (fd < 0)
+		return (NULL);
+	if (str_stash != NULL && str_stash[0] != '\0')
+		stash = insert_stack(stash, str_stash, ft_strlen(str_stash));
 	buf = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (buf == NULL)
 		return (NULL);
@@ -144,6 +139,9 @@ p_gnl	ft_read_line(int fd, p_gnl stash)
 		stash = insert_stack(stash, buf, ret);
 	}
 	free(buf);
+	free(str_stash);
+	if (!ft_strchr(stash->buffer, '\n'))
+		stash = clear_stack(stash);
 	return (stash);
 }
 
@@ -155,18 +153,17 @@ char	*ft_cut_stash(char *str_stash)
 
 	i = 0;
 	j = 0;
-	if (str_stash == NULL)
-		return (NULL);
 	while (str_stash[i] && str_stash[i] != '\n')
 		i++;
-	if (str_stash[i] == '\n')
-		i++;
-	tmp = malloc(sizeof(char) * ft_strlen(str_stash) - i + 1);
-	if (tmp == NULL)
+	if (!str_stash[i])
 	{
 		free(str_stash);
 		return (NULL);
 	}
+	i++;
+	tmp = ft_calloc(ft_strlen(str_stash) - i + 1, sizeof(char));
+	if (tmp == NULL)
+		return (NULL);
 	while (str_stash[i])
 		tmp[j++] = str_stash[i++];
 	tmp[j] = '\0';
@@ -183,27 +180,27 @@ char	*get_next_line(int fd)
 	stash = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0/* || read(fd, &line, 0) < 0*/)
 		return (NULL);
-	stash = ft_read_line(fd, stash);
+//	printf("DEBUT get_next_line - Valeur de str_stash : \n%s", str_stash);
+	stash = ft_read_line(fd, stash, str_stash);
 	if (stash == NULL)
 		return (NULL);
-//	printf("\nValeur de stash->len dans get_next_line : %d\n", stash->len);
-//	printf("Valeur de stash->buffer dans get_next_line : %s\n", stash->buffer);
-	str_stash = malloc(sizeof(char) * stash->len + 1);
+	str_stash = ft_calloc(stash->len + 1, sizeof(char));
 	if (str_stash == NULL)
 		return (NULL);
 	str_stash = ft_put_stash(str_stash, stash);
 	if (str_stash == NULL)
 	{
 		printf("Erreur ! ft_put_stash = NULL !!\n");
-		stash = clear_stack(stash);
+	//	free(str_stash);
 		return (NULL);
 	}
-	printf("str_stash dans get_next_line : %s\n", str_stash);
-	printf("\nValeur de str_stash dans get_next_line : %s\n", str_stash);
+//	printf("\n>>>>>>FIN 1 get_next_line - Valeur de str_stash : \n%s", str_stash);
+//	printf("MARQUEUR - 1\n");
 	line = ft_put_line(str_stash); 
+//	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VALEUR DE LINE : %s", line);
 	str_stash = ft_cut_stash(str_stash);
-	printf("line : %s\n", line);
-	printf("str_stash : %s\n", str_stash);
-	printf("ft_read_line - Valeur de ft_strlen(str_stash) : %ld\n", ft_strlen(str_stash));
+//	printf("\n>>>>>>FIN 2 get_next_line - Valeur de str_stash : \n%s", str_stash);
+//	printf("MARQUEUR - 2\n");
+//	printf("\n>>>>>>VALEUR DE LINE : %s", line);
 	return (line);
 }

@@ -55,38 +55,40 @@ char	*ft_strcpy(char *dest, char *src)
 	dest[i] = '\0';
 	return (dest);
 }
-/*
-t_gnl	*ft_gnl(t_gnl *stash)
-{
-	stash->len = 0;
-	stash->buffer = NULL;
-	stash->next = NULL;
-	return (stash);
-}
-*/
 
 char	*ft_put_line(char *str_stash)
 {
 	int		i;
+	int		len;
 	char	*line;
 
 	i = 0;
+	len = 0;
 	if (str_stash == NULL)
 		return (NULL);
-	while (str_stash[i] && str_stash[i] != '\n')
-		i++;
-	if (!str_stash[i])
+	while (str_stash[len] && str_stash[len] != '\n')
+		len++;
+/*	if (str_stash[len] == '\n')
+		len++;
+	else
 		return (NULL);
-	i++;
-	line = malloc(sizeof(char) * i + 1);
+*/	line = ft_calloc(len + 2, sizeof(char));
 	if (line == NULL)
 	{
 		free(str_stash);
 		return (NULL);
 	}
-	line[i] = '\0';
-	while (--i >= 0)
+	while (i < len)
+	{
 		line[i] = str_stash[i];
+		i++;
+	}
+	if (str_stash[i] == '\n')
+	{
+		line[i] = '\n';
+		i++;
+	}
+	line[i] = '\0';
 	return (line);
 }
 

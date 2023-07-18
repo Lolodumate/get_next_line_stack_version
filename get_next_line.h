@@ -25,7 +25,7 @@
 
 typedef struct s_gnl
 {
-	int			len;
+	int				len;
 	int			ret;
 	char		*buffer;
 	struct	s_gnl	*next;
@@ -35,13 +35,12 @@ char				*get_next_line(int fd);
 char				*ft_cut_stash(char *str_stash);
 char				*ft_put_line(char *str_stash);
 char				*ft_put_stash(char *str_stash, p_gnl stash);
-p_gnl				ft_read_line(int fd, p_gnl stash);
-//char				*ft_read_line(char *str_stash, int fd, p_gnl stash);
+t_gnl				*ft_read_line(int fd, t_gnl *stash, char *str_stash);
 char				*ft_strchr(char *s, char c);
 char				*ft_strcpy(char *dest, char *src);
 size_t			ft_strlen(char *str);
-p_gnl		insert_stack(p_gnl element, char *buffer, int ret);
+t_gnl		*insert_stack(t_gnl *element, char *buffer, size_t ret);
 void	*ft_calloc(size_t nmemb, size_t size);
-p_gnl	clear_stack(p_gnl element);
+t_gnl	*clear_stack(t_gnl *stash);
 
 # endif
