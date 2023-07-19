@@ -40,7 +40,6 @@ char				*ft_strchr(char *s, char c);
 char				*ft_strcpy(char *dest, char *src);
 size_t			ft_strlen(char *str);
 t_gnl		*insert_stack(t_gnl *element, char *buffer, size_t ret);
-void	*ft_calloc(size_t nmemb, size_t size);
 t_gnl	*clear_stack(t_gnl *stash);
 
 # endif

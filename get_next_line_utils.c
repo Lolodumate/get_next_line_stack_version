@@ -56,60 +56,55 @@ char	*ft_strcpy(char *dest, char *src)
 	return (dest);
 }
 
+char	*ft_cut_stash(char *str_stash)
+{
+	int		i;
+	int		j;
+	char	*tmp;
+
+	i = 0;
+	j = 0;
+	while (str_stash[i] && str_stash[i] != '\n')
+		i++;
+	if (!str_stash[i])
+	{
+		free(str_stash);
+		return (NULL);
+	}
+	i++;
+	tmp = malloc(sizeof(char) * (ft_strlen(str_stash) - i + 1));
+	if (tmp == NULL)
+		return (NULL);
+	while (str_stash[i])
+		tmp[j++] = str_stash[i++];
+	tmp[j] = '\0';
+	free(str_stash);
+	return (tmp);
+}
+
 char	*ft_put_line(char *str_stash)
 {
 	int		i;
-	int		len;
+	int		j;
 	char	*line;
 
 	i = 0;
-	len = 0;
+	j = 0;
 	if (str_stash == NULL)
 		return (NULL);
-	while (str_stash[len] && str_stash[len] != '\n')
-		len++;
-/*	if (str_stash[len] == '\n')
-		len++;
-	else
-		return (NULL);
-*/	line = ft_calloc(len + 2, sizeof(char));
+	while (str_stash[i] && str_stash[i] != '\n')
+		i++;
+	line = malloc(sizeof(char) * i + 2);
 	if (line == NULL)
 	{
 		free(str_stash);
 		return (NULL);
 	}
-	while (i < len)
+	while (j <= i)
 	{
-		line[i] = str_stash[i];
-		i++;
+		line[j] = str_stash[j];
+		j++;
 	}
-	if (str_stash[i] == '\n')
-	{
-		line[i] = '\n';
-		i++;
-	}
-	line[i] = '\0';
+	line[j] = '\0';
 	return (line);
-}
-
-void	*ft_calloc(size_t nmemb, size_t size)
-{
-	unsigned int		n;
-	unsigned int		i;
-	char	*ptr;
-
-	n = nmemb * size;
-	i = 0;
-	ptr = NULL;
-	if (nmemb != 0 && size != 0 && ((nmemb * size) / size) != nmemb)
-		return (NULL);
-	ptr = malloc(n);
-	if (ptr == NULL)
-		return (NULL);
-	while (i < n)
-	{
-		ptr[i] = 0;
-		i++;
-	}
-	return (ptr);
 }
