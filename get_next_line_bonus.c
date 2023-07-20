@@ -38,7 +38,7 @@
  *      read : lit sur le "descripteur de fichier" 0 (c'est à dire l'entrée standard),et  place ce qui a été lu en mémoire à partir de l'adresse de buf, en se limitant à au plus x caractères.
  */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 t_gnl	*insert_stack(t_gnl *stash, char *buf, size_t ret)
 {
@@ -141,23 +141,23 @@ p_gnl	ft_read_line(int fd, t_gnl *stash, char *str_stash)
 char	*get_next_line(int fd)
 {
 	t_gnl	*stash;
-	static char	*str_stash;
+	static char	*str_stash[4096];
 	char	*line;
 
 	stash = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	stash = ft_read_line(fd, stash, str_stash);
+	stash = ft_read_line(fd, stash, str_stash[fd]);
 	if (stash == NULL)
 		return (NULL);
-	free(str_stash);
-	str_stash = malloc(sizeof(char) * stash->len + 1);
-	if (str_stash == NULL)
+	free(str_stash[fd]);
+	str_stash[fd] = malloc(sizeof(char) * stash->len + 1);
+	if (str_stash[fd] == NULL)
 		return (NULL);
-	str_stash = ft_put_stash(str_stash, stash);
-	if (str_stash == NULL)
+	str_stash[fd] = ft_put_stash(str_stash[fd], stash);
+	if (str_stash[fd] == NULL)
 		return (NULL);
-	line = ft_put_line(str_stash); 
-	str_stash = ft_cut_stash(str_stash);
+	line = ft_put_line(str_stash[fd]); 
+	str_stash[fd] = ft_cut_stash(str_stash[fd]);
 	return (line);
 }
