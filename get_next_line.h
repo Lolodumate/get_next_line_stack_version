@@ -6,7 +6,7 @@
 /*   By: laroges <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/23 17:37:08 by laroges           #+#    #+#             */
-/*   Updated: 2023/06/23 17:37:19 by laroges          ###   ########.fr       */
+/*   Updated: 2023/08/04 19:23:56 by laroges          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,20 @@
 typedef struct s_gnl
 {
 	int				len;
-	int			ret;
-	char		*buffer;
-	struct	s_gnl	*next;
-} t_gnl, *p_gnl;
+	int				ret;
+	char			*buffer;
+	struct s_gnl	*next;
+}	t_gnl;
 
-char				*get_next_line(int fd);
-char				*ft_cut_stash(char *str_stash);
-char				*ft_put_line(char *str_stash);
-char				*ft_put_stash(char *str_stash, p_gnl stash);
-t_gnl				*ft_read_line(int fd, t_gnl *stash, char *str_stash);
-char				*ft_strchr(char *s, char c);
-char				*ft_strcpy(char *dest, char *src);
-size_t			ft_strlen(char *str);
-t_gnl		*insert_stack(t_gnl *element, char *buffer, size_t ret);
+char	*get_next_line(int fd);
+char	*ft_cut_stash(char *str_stash);
+char	*ft_put_line(char *str_stash);
+char	*ft_put_stash(char *str_stash, t_gnl *stash);
+t_gnl	*ft_read_line(int fd, t_gnl *stash, char *str_stash);
+char	*ft_strchr(char *s, char c);
+char	*ft_strcpy(char *dest, char *src);
+size_t	ft_strlen(char *str);
+t_gnl	*insert_stack(t_gnl *element, char *buffer, size_t ret);
 t_gnl	*clear_stack(t_gnl *stash);
 
-# endif
+#endif
